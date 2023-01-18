@@ -9,39 +9,25 @@ import { Manager } from 'socket.io-client';
 })
 export class AppComponent {
 
-  private nsOrders: any;
+  private ns: any;
 
   constructor() {
     const ws = new Manager('http://localhost:3000');
-    this.nsOrders = ws.socket('/orders')
+    this.ns = ws.socket('/domain1')
       .on('connect', () => {
-        console.log(`connected on: orders`);
+        console.log(`connected on: /domain1`);
       }).on('disconnect', () => {
-        console.log(`disconnected on: orders`);
+        console.log(`disconnected on: /domain1`);
       });
 
     this.join();
   }
 
   join() {
-    this.nsOrders.on('domain1', (data: any) => console.table(data));
+    this.ns.on('/domain1', (data: any) => console.table(data));
   }
 
-  send(domain: string) {
-    this.nsOrders.emit('status', this.buildMessage(domain, 'new status'));
+  send(status: string) {
+    this.ns.emit('notify', status || 'new status');
   }
-
-  buildMessage(domain: string, status: string) {
-    return {
-      domain,
-      order: 100,
-      status
-    };
-  }
-}
-
-export interface Message {
-  domain: string;
-  order: number;
-  status: string;
 }
